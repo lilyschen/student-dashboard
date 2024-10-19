@@ -25,11 +25,23 @@ app.get('/getSelf', async (req, res) => {
 
 
 // Make endpoint for getDiscussions here
-app.get('/getDiscussions', async (req, res) => {
-    const courseId = 161721
+app.get('/getDiscussions/:id', async (req, res) => {
+    const courseId = req.params.id
+    try {
     const discussions = await getDiscussions(courseId)
     const formattedDiscussions = flattenTopicAndReplies(discussions)
-    res.json(formattedDiscussions)
+    res.json(formattedDiscussions)}
+    catch (error) {
+        console.error("Error fetching discussions:", error);
+        res.status(500).json({error: `Failed to fetch discussions for course id: ${courseId}`})
+    }
+})
+
+// Make endpoint for getCourses here
+app.get('/getCourses', async (req, res) => {
+    const self = await canvasAPI.getSelf()
+    const courses = await canvasAPI.getCoursesByUser(self.id)
+    res.json(courses)
 })
 
 
